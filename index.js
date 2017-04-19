@@ -11,13 +11,13 @@ let test = {
 app.get('/', function (req, res) {
   res.send(`<pre>
     Example creation usage:
-      https://domain/new/https://www.google.com
+      https://fcc-api-projects-shindakun.c9users.io/new/https://www.google.com
 
     Example creation output
-      { "original_url":"https://www.google.com", "short_url":"https://domain/0" }
+      { "original_url":"https://www.google.com", "short_url":"https://fcc-api-projects-shindakun.c9users.io/0" }
     
     Usage:
-      https://domain/0
+      https://fcc-api-projects-shindakun.c9users.io/0
     Will redirect to:
       https://www.google.com/
     </pre>`);
@@ -35,10 +35,21 @@ app.get('/:in', function (req, res) {
   }
 });
 
+let findByVal = function (url) {
+  for (let prop in test) {
+    if (test.hasOwnProperty(prop)) {
+      if (test[prop] === url)
+        return prop;
+    }
+  }
+  return false;
+}
+
 app.get('/new/*', function (req, res) {
-  console.log(Object.keys(test)[Object.keys(test).length-1]);
-  let slot = Object.keys(test).length;
-  let shortUrl = 'http://domain/' + slot;
+  let url = req.params[0];
+  let slot = findByVal(url) || Object.keys(test).length;
+  let shortUrl = 'http://fcc-api-projects-shindakun.c9users.io/' + slot;
+  
   test[slot] = req.params[0];
   res.json({
     original_url: req.params[0],
