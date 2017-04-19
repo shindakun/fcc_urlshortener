@@ -9,15 +9,16 @@ let test = {
 };
 
 app.get('/', function (req, res) {
+  let url = req.protocol + '://' + req.hostname + req.originalUrl;
   res.send(`<pre>
     Example creation usage:
-      https://fcc-api-projects-shindakun.c9users.io/new/https://www.google.com
+      ${url}new/https://www.google.com
 
     Example creation output
-      { "original_url":"https://www.google.com", "short_url":"https://fcc-api-projects-shindakun.c9users.io/0" }
+      { "original_url":"https://www.google.com", "short_url":"${url}0" }
     
     Usage:
-      https://fcc-api-projects-shindakun.c9users.io/0
+      ${url}0
     Will redirect to:
       https://www.google.com/
     </pre>`);
@@ -35,10 +36,10 @@ app.get('/:in', function (req, res) {
   }
 });
 
-let findByVal = function (url) {
+let findByVal = function (urlIn) {
   for (let prop in test) {
     if (test.hasOwnProperty(prop)) {
-      if (test[prop] === url)
+      if (test[prop] === urlIn)
         return prop;
     }
   }
@@ -46,9 +47,10 @@ let findByVal = function (url) {
 }
 
 app.get('/new/*', function (req, res) {
-  let url = req.params[0];
-  let slot = findByVal(url) || Object.keys(test).length;
-  let shortUrl = 'http://fcc-api-projects-shindakun.c9users.io/' + slot;
+  let url = req.protocol + '://' + req.hostname;
+  let urlIn = req.params[0];
+  let slot = findByVal(urlIn) || Object.keys(test).length;
+  let shortUrl = `${url}/${slot}`;
   
   test[slot] = req.params[0];
   res.json({
