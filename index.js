@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const validUrl = require('valid-url');
 let app = express();
 
 // Switch over to mongo later.
@@ -47,16 +48,22 @@ let findByVal = function (urlIn) {
 }
 
 app.get('/new/*', function (req, res) {
-  let url = req.protocol + '://' + req.hostname;
-  let urlIn = req.params[0];
-  let slot = findByVal(urlIn) || Object.keys(test).length;
-  let shortUrl = `${url}/${slot}`;
-  
-  test[slot] = req.params[0];
-  res.json({
-    original_url: req.params[0],
-    short_url: shortUrl
-  });
+  if (!validUrl.isUri(req.params[0])) {
+    res.json({
+      error_bad_url: req.params[0]
+    });
+  } else {
+    let urlIn = req.params[0];
+    let url = req.protocol + '://' + req.hostname;
+    let slot = findByVal(urlIn) || Object.keys(test).length;
+    let shortUrl = `${url}/${slot}`;
+    
+    test[slot] = req.params[0];
+    res.json({
+      original_url: req.params[0],
+      short_url: shortUrl
+    });
+  }
 });
 
 app.listen(process.env.PORT || 3000);
